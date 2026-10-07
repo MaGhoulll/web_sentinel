@@ -1,12 +1,16 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def add_target(url: str, expected_keyword: str):
     try:
         conn = psycopg2.connect(
-            host="localhost",
-            database="sentinel_db",
-            user="postgres",
-            password="4484373"
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
         )
         cursor = conn.cursor()
         cursor.execute(
@@ -31,10 +35,10 @@ def get_active_targets():
     cursor = None
     try:
         conn = psycopg2.connect(
-            host="localhost",
-            database="sentinel_db",
-            user="postgres",
-            password="4484373"
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
         )
         cursor = conn.cursor()
         cursor.execute("SELECT id, url, expected_keyword FROM targets WHERE is_active = TRUE")
@@ -42,7 +46,7 @@ def get_active_targets():
         return targets
     except Exception as e:
         print(f"Возникла ошибка при получении активных объектов: {e}")
-        return None
+        return []
     finally:
         if cursor:
             cursor.close()
@@ -51,4 +55,6 @@ def get_active_targets():
 
 active_targets = get_active_targets()
 for id, url, expected_keyword in active_targets:
-    print(f'Хуй: {id}, URL: {url}, Expected Keyword: {expected_keyword}')
+    print(f'ID: {id}, URL: {url}, Expected Keyword: {expected_keyword}')
+
+print("[DEBUG] Проверка .env: DB_USER =", os.getenv("DB_USER"))
