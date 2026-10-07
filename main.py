@@ -1,4 +1,6 @@
 import httpx
+
+
 def check_website(url, expected_keyword: str = None):
     try:
         response = httpx.get(url, timeout=5, follow_redirects=True)
@@ -14,5 +16,6 @@ def check_website(url, expected_keyword: str = None):
             return f"[ERROR] {url} недоступен. Статус код: {response.status_code}. Время отклика: {round(latency, 2)} мс."
     except httpx.RequestError as exc:
         return f"[ERROR] Ошибка при попытке доступа к {url}: {exc}"
+
 
 print(check_website("https://github.com", expected_keyword="NeSushestvuet123"))
